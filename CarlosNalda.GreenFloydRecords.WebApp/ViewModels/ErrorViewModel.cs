@@ -1,4 +1,4 @@
-namespace CarlosNalda.GreenFloydRecords.WebApp.Models
+namespace CarlosNalda.GreenFloydRecords.WebApp.ViewModels
 {
     public class ErrorViewModel
     {

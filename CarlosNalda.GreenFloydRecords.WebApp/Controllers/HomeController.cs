@@ -1,4 +1,4 @@
-﻿using CarlosNalda.GreenFloydRecords.WebApp.Models;
+﻿using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
