@@ -1,0 +1,30 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h2 class="text-success">
+                    Oops!
+                </h2>
+                <div class="mt-3">
+                    <h4 class="text-success">
+                        500 Internal Server Error
+                    </h4>
+                </div>
+                <div class="error-details mt-4">
+                    Sorry, an error occurred while processing your request
+                </div>
+                <div class="mt-3">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-success">
+                        <span class="glyphicon glyphicon-home"></span>
+                        Take Me Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
