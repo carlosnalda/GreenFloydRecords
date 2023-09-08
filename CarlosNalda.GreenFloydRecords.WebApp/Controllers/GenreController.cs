@@ -38,7 +38,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 .Add(genre);
             _applicationDbcontext.SaveChanges();
 
-            TempData["success"] = "Category created successfully";
+            TempData["success"] = "Genre created successfully";
             return RedirectToAction("Index");
         }
 
@@ -76,7 +76,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 .Update(genre);
             _applicationDbcontext.SaveChanges();
 
-            TempData["success"] = "Category updated successfully";
+            TempData["success"] = "Genre updated successfully";
             return RedirectToAction("Index");
         }
 
@@ -114,7 +114,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 .Remove(genre);
             _applicationDbcontext.SaveChanges();
 
-            TempData["success"] = "Category deleted successfully";
+            TempData["success"] = "Genre deleted successfully";
             return RedirectToAction("Index");
         }
     }
