@@ -24,3 +24,7 @@ body {
     padding: 70px 15px;
     text-align: center;
 }
+
+.dataTables_paginate {
+    padding-bottom: 16px
+}

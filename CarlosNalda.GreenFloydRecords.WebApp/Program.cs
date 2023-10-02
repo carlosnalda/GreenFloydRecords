@@ -1,6 +1,6 @@
 using CarlosNalda.GreenFloydRecords.WebApp.Data;
 using CarlosNalda.GreenFloydRecords.WebApp.DatabaseInitializer;
-using Microsoft.AspNetCore.Builder;
+using CarlosNalda.GreenFloydRecords.WebApp.ImageFileInitializer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp
@@ -22,16 +22,19 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
                     .UseSqlServer(connectionString));
 
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+            builder.Services.AddScoped<IDefaultImageFileInitializer, DefaultImageFileInitializer>();
 
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
-                SeedDatabase(app);
-
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
+            {
+                SeedImageFiles(app);
+                SeedDatabase(app);
+            }
+            else
             {
                 app.UseExceptionHandler("/InvalidAction/Error");
 
@@ -55,12 +58,21 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
             app.Run();
         }
 
-        static void SeedDatabase(WebApplication app)
+        private static void SeedDatabase(WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
             {
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 dbInitializer.Initialize();
+            }
+        }
+
+        private static void SeedImageFiles(WebApplication app)
+        {
+            using (var scope = app.Services.CreateScope())
+            {
+                var defaultImageFileInitializer = scope.ServiceProvider.GetRequiredService<IDefaultImageFileInitializer>();
+                defaultImageFileInitializer.Initialize();
             }
         }
     }

@@ -1,3 +1,33 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<CarlosNalda.GreenFloydRecords.WebApp.Data.VinylRecord>
+
+<div class="row pb-3">
+    @foreach (var vinylRecord in Model)
+    {
+        <div class="col-lg-3 col-md-6">
+            <div class="row p-2">
+                <div class="col-12 p-1">
+                    <div class="card border-secondary">
+                        <img class="card-img-top rounded pt-3 px-3" src="@vinylRecord.ImageUrl" />
+                        <div class="card-body">
+                            <div class="pl-1">
+                                <p class="card-title h5 text-success">@vinylRecord.Name</p>
+                                <p class="card-title text-secondary">by <b>@vinylRecord.Artist.Name</b></p>
+                            </div>
+                            <div class="pl-1">
+                                <p class="text-secondary">Rate: <b>@vinylRecord.Rate.ToString("0.00")</b></p>
+                            </div>
+                            <div class="pl-1">
+                                <p class="text-secondary">Price: <b>$@vinylRecord.Price.ToString("0.00")</b></p>
+                            </div>
+                            <div>
+                                <a class="btn btn-outline-success form-control">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

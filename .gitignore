@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/CarlosNalda.GreenFloydRecords.WebApp/wwwroot/images/vinylRecord

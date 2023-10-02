@@ -1,0 +1,32 @@
+<div class="container p-3">
+    <div class="row">
+        <div class="col-6">
+            <h4 class="text-success">Vinyl record List</h4>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="VinylRecord" asp-action="Upsert" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> &nbsp; Create New Vinyl Record
+            </a>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="table-responsive-md">
+        <table id="tblData" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Record Name</th>
+                    <th>Genre</th>
+                    <th>Artist</th>
+                    <th>Rate</th>
+                    <th>Price</th>
+                    <th />
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/vinylRecord.js"></script>
+}

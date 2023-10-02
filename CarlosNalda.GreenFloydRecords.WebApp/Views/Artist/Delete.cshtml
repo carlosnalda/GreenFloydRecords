@@ -1,0 +1,43 @@
+﻿@model CarlosNalda.GreenFloydRecords.WebApp.Data.Artist
+@{
+    ViewData["Title"] = "Delete an artist";
+}
+
+<form method="post" asp-action="Delete">
+    <input asp-for="Id" hidden />
+    <div class="row m-1">
+        <div class="col-md-6 order-md-1 border">
+            <h4 class="text-success mt-2">Delete this Artist</h4>
+            <div>
+                <hr />
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" disabled class="form-control" />
+                <span asp-validation-for="Name"></span>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 mb-3">
+                    <label asp-for="Formed"></label>
+                    <input asp-for="Formed" disabled class="form-control" />
+                </div>
+                <div class="form-group col-md-6 mb-3">
+                    <label asp-for="Disbanded"></label>
+                    <input asp-for="Disbanded" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a asp-controller="Artist" asp-action="Index" class="btn btn-secondary">
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

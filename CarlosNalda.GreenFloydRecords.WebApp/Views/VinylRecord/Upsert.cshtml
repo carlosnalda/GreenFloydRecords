@@ -1,0 +1,96 @@
+﻿@model CarlosNalda.GreenFloydRecords.WebApp.ViewModels.VinylRecordVM
+
+<form method="post" asp-action="Upsert" enctype="multipart/form-data">
+    <input asp-for="VinylRecord.Id" hidden />
+    <input asp-for="VinylRecord.ImageUrl" hidden />
+
+    <div class="row">
+        <div class="col-10">
+            <div class="border mt-1 row">
+                <div class="col-12 mt-2">
+                    <h4 class="text-success">@(Model.VinylRecord.Id != default ? "Update" : "Create")  Vinyl Record</h4>
+                    <hr />
+                </div>
+                @*<div asp-validation-summary="All"></div>*@
+                <div class="mb-3">
+                    <label asp-for="VinylRecord.Name"></label>
+                    <input asp-for="VinylRecord.Name" class="form-control" />
+                    <span asp-validation-for="VinylRecord.Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="VinylRecord.Description"></label>
+                    <textarea asp-for="VinylRecord.Description" rows="3" class="form-control"></textarea>
+                    <span asp-validation-for="VinylRecord.Description" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="VinylRecord.ReleaseDate"></label>
+                    <input asp-for="VinylRecord.ReleaseDate" class="form-control" />
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="VinylRecord.ImageUrl"></label>
+                    <input type="file" id="uploadBox" name="file" class="form-control" />
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="VinylRecord.Rate"></label>
+                    <input asp-for="VinylRecord.Rate" class="form-control" />
+                    <span asp-validation-for="VinylRecord.Rate" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="VinylRecord.Price"></label>
+                    <input asp-for="VinylRecord.Price" class="form-control" />
+                    <span asp-validation-for="VinylRecord.Price" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="VinylRecord.ArtistId"></label>
+                    <select asp-for="VinylRecord.ArtistId" asp-items="@Model.ArtistList" class="form-select">
+                        <option disabled selected>--Select CoverType--</option>
+                    </select>
+                    <span asp-validation-for="VinylRecord.ArtistId" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="VinylRecord.GenreId"></label>
+                    <select asp-for="VinylRecord.GenreId" asp-items="@Model.GenreList" class="form-select">
+                        <option disabled selected>--Select CoverType--</option>
+                    </select>
+                    <span asp-validation-for="VinylRecord.GenreId" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-12">
+                    @if (Model.VinylRecord.Id != default)
+                    {
+                        <button type="submit" class="btn btn-success" style="width:150px">Update</button>
+                    }
+                    else
+                    {
+                        <button type="submit" onclick="return ValidateInput()" class="btn btn-success" style="width:150px">Create</button>
+                    }
+                    <a asp-controller="VinylRecord" asp-action="Index" class="btn btn-secondary" style="width:150px">
+                        Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-2 pt-4">
+            <img src="@Model.VinylRecord.ImageUrl"
+                 width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+        function ValidateInput() {
+            if (document.getElementById("uploadBox").value == "") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please upload an Image!',
+                });
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
