@@ -7,6 +7,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
     public class GenreController : Controller
     {
         private readonly ApplicationDbContext _applicationDbcontext;
+
         public GenreController(ApplicationDbContext applicationDbContext)
         {
             _applicationDbcontext = applicationDbContext;
