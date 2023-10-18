@@ -57,9 +57,6 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Artist artist)
         {
-            if (char.IsDigit(artist.Name.ToCharArray()[0]))
-                ModelState.AddModelError("name", "Name can not start with digit.");
-
             if (!ModelState.IsValid)
                 return View(artist);
 

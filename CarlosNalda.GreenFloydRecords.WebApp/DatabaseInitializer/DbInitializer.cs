@@ -35,106 +35,143 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.DatabaseInitializer
 
         private void SeedGenres()
         {
-            _db.Genre.Add(
+            if (!_db.Genre.Any(x => x.Id == Guid.Parse(IdConstants.GenreGrungeId)))
+            {
+                _db.Genre.Add(
                 new Genre
                 {
                     Id = Guid.Parse(IdConstants.GenreGrungeId),
                     Name = "Grunge",
                 });
-            _db.Genre.Add(
+            }
+            if (!_db.Genre.Any(x => x.Id == Guid.Parse(IdConstants.GenreAlternativeRockId)))
+            {
+                _db.Genre.Add(
                 new Genre
                 {
                     Id = Guid.Parse(IdConstants.GenreAlternativeRockId),
                     Name = "Alternative Rock",
                 });
-            _db.Genre.Add(
+            }
+            if (!_db.Genre.Any(x => x.Id == Guid.Parse(IdConstants.GenreProgressiveRockId)))
+            {
+                _db.Genre.Add(
                 new Genre
                 {
                     Id = Guid.Parse(IdConstants.GenreProgressiveRockId),
                     Name = "Progressive Rock",
                 });
-            _db.Genre.Add(
+            }
+            if (!_db.Genre.Any(x => x.Id == Guid.Parse(IdConstants.GenreArtRockId)))
+            {
+                _db.Genre.Add(
                 new Genre
                 {
                     Id = Guid.Parse(IdConstants.GenreArtRockId),
                     Name = "Art Rock",
                 });
-            _db.Genre.Add(
+            }
+            if (!_db.Genre.Any(x => x.Id == Guid.Parse(IdConstants.GenrePostPunkId)))
+            {
+                _db.Genre.Add(
                 new Genre
                 {
                     Id = Guid.Parse(IdConstants.GenrePostPunkId),
                     Name = "Post-Punk",
                 });
-            _db.Genre.Add(
+            }
+            if (!_db.Genre.Any(x => x.Id == Guid.Parse(IdConstants.GenreRockUrbanoEspanolId)))
+            {
+                _db.Genre.Add(
                 new Genre
                 {
                     Id = Guid.Parse(IdConstants.GenreRockUrbanoEspanolId),
                     Name = "Rock urbano espanol",
                 });
+            }
             _db.SaveChanges();
         }
 
         private void SeedArtists()
         {
-            if (!_db.Set<Artist>().Any())
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistNirvanaId)))
             {
                 _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistNirvanaId),
-                        Name = "Nirvana",
-                        Formed = new DateTime(1987, 01, 01),
-                        Disbanded = new DateTime(1994, 04, 08),
-                    });
-                _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistRadioheadId),
-                        Name = "Radiohead",
-                        Formed = new DateTime(1991, 01, 01),
-                    });
-                _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistTheMarsVoltaId),
-                        Name = "The Mars Volta",
-                        Formed = new DateTime(2001, 01, 01),
-                    });
-                _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistPinkFloydId),
-                        Name = "Pink Floyd",
-                        Formed = new DateTime(1963, 01, 01),
-                    });
-                _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistKingCrimsonId),
-                        Name = "King Crimson",
-                        Formed = new DateTime(1969, 01, 01),
-                        Disbanded = new DateTime(2021, 01, 01),
-                    });
-                _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistJoyDivisionId),
-                        Name = "Joy Division",
-                        Formed = new DateTime(1977, 01, 01),
-                        Disbanded = new DateTime(1980, 01, 01),
-                    });
-                _db.Artist.Add(
-                    new Artist
-                    {
-                        Id = Guid.Parse(IdConstants.ArtistExtremoduroId),
-                        Name = "Extremoduro",
-                        Formed = new DateTime(1987, 01, 01),
-                        Disbanded = new DateTime(2019, 01, 01),
-                    });
-
-                _db.SaveChanges();
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistNirvanaId),
+                    Name = "Nirvana",
+                    Formed = new DateTime(1987, 01, 01),
+                    Disbanded = new DateTime(1994, 04, 08),
+                });
             }
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistRadioheadId)))
+            {
+                _db.Artist.Add(
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistRadioheadId),
+                    Name = "Radiohead",
+                    Formed = new DateTime(1991, 01, 01),
+                });
+            }
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistTheMarsVoltaId)))
+            {
+                _db.Artist.Add(
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistTheMarsVoltaId),
+                    Name = "The Mars Volta",
+                    Formed = new DateTime(2001, 01, 01),
+                });
+            }
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistPinkFloydId)))
+            {
+                _db.Artist.Add(
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistPinkFloydId),
+                    Name = "Pink Floyd",
+                    Formed = new DateTime(1963, 01, 01),
+                });
+            }
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistKingCrimsonId)))
+            {
+                _db.Artist.Add(
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistKingCrimsonId),
+                    Name = "King Crimson",
+                    Formed = new DateTime(1969, 01, 01),
+                    Disbanded = new DateTime(2021, 01, 01),
+                });
+            }
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistJoyDivisionId)))
+            {
+                _db.Artist.Add(
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistJoyDivisionId),
+                    Name = "Joy Division",
+                    Formed = new DateTime(1977, 01, 01),
+                    Disbanded = new DateTime(1980, 01, 01),
+                });
+            }
+            if (!_db.Artist.Any(x => x.Id == Guid.Parse(IdConstants.ArtistExtremoduroId)))
+            {
+                _db.Artist.Add(
+                new Artist
+                {
+                    Id = Guid.Parse(IdConstants.ArtistExtremoduroId),
+                    Name = "Extremoduro",
+                    Formed = new DateTime(1987, 01, 01),
+                    Disbanded = new DateTime(2019, 01, 01),
+                });
+            }
+
+            _db.SaveChanges();
         }
+
 
         private void SeedVinylrecords()
         {

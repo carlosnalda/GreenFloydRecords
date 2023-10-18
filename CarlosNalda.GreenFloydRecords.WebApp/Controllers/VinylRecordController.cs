@@ -1,4 +1,5 @@
 ﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
+using CarlosNalda.GreenFloydRecords.WebApp.ImageFileInitializer;
 using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -40,10 +41,10 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 ArtistList = _applicationDbcontext
                   .Artist
                   .ToList()
-                  .Select(genre => new SelectListItem
+                  .Select(artist => new SelectListItem
                   {
-                      Value = genre.Id.ToString(),
-                      Text = genre.Name,
+                      Value = artist.Id.ToString(),
+                      Text = artist.Name,
                   }).ToList(),
             };
 
@@ -87,10 +88,10 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 viewModel.ArtistList = _applicationDbcontext
                     .Artist
                     .ToList()
-                    .Select(genre => new SelectListItem
+                    .Select(artist => new SelectListItem
                     {
-                        Value = genre.Id.ToString(),
-                        Text = genre.Name,
+                        Value = artist.Id.ToString(),
+                        Text = artist.Name,
                     }).ToList();
 
                 return View(viewModel);
@@ -110,7 +111,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
                 if (viewModel.VinylRecord.ImageUrl != null)
                 {
-                    var oldImagePath = Path.Combine(wwwRootPath, viewModel.VinylRecord.ImageUrl.TrimStart('\\'));
+                    var oldImagePath = $"{Path.Combine(_hostEnvironment.WebRootPath, ImageDirectoryPath.Production)}\\{Path.GetFileName(viewModel.VinylRecord.ImageUrl)}";
                     if (System.IO.File.Exists(oldImagePath))
                     {
                         System.IO.File.Delete(oldImagePath);
@@ -121,7 +122,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 {
                     file.CopyTo(fileStreams);
                 }
-                viewModel.VinylRecord.ImageUrl = @"\images\vinylRecord\" + fileName + extension;
+                viewModel.VinylRecord.ImageUrl = "/images/vinylRecord/" + fileName + extension;
 
             }
 
@@ -180,7 +181,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 return Json(new { success = false, message = "Error while deleting" });
             }
 
-            var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, vinylRecord.ImageUrl.TrimStart('\\'));
+            var oldImagePath = $"{Path.Combine(_hostEnvironment.WebRootPath, ImageDirectoryPath.Production)}\\{Path.GetFileName(vinylRecord.ImageUrl)}";
             if (System.IO.File.Exists(oldImagePath))
             {
                 System.IO.File.Delete(oldImagePath);

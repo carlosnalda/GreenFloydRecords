@@ -22,27 +22,12 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<VinylRecord> list = GetAll<VinylRecord>(includeProperties: "Artist,Genre");
+            IEnumerable<VinylRecord> list = _applicationDbcontext
+                .VinylRecord
+                .Include(v => v.Genre)
+                .Include(v => v.Artist);
 
             return View(list);
-        }
-
-        private IEnumerable<T> GetAll<T>(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
-              where T : class
-        {
-            IQueryable<T> query = _applicationDbcontext.Set<T>();
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-            if (includeProperties != null)
-            {
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
-            }
-            return query.ToList();
         }
     }
 }

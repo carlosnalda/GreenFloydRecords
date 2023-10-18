@@ -1,6 +1,5 @@
 ﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {

@@ -4,5 +4,6 @@
     {
         internal const string Default = @"images\defaultImages";
         internal const string Production = @"images\vinylRecord";
+        internal const string ProductionUrl = @"/images/vinylRecord/";
     }
 }
