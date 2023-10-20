@@ -1,5 +1,6 @@
 ﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
@@ -13,10 +14,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         public IActionResult Index()
         {
-            var artist = _applicationDbcontext
-                .Set<Artist>()
-                .ToList();
-
+            var artist = GetAll<Artist>();
             return View(artist);
         }
 
@@ -29,10 +27,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(artist);
 
-            _applicationDbcontext
-                .Set<Artist>()
-                .Add(artist);
-            _applicationDbcontext.SaveChanges();
+            Add(artist);
 
             TempData["success"] = "Artist created successfully";
             return RedirectToAction("Index");
@@ -43,9 +38,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = _applicationDbcontext
-                .Artist
-                .Find(parsedId);
+            var artist = GetById<Artist>(parsedId);
 
             if (artist == null)
                 return NotFound();
@@ -60,14 +53,13 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(artist);
 
-            if (!_applicationDbcontext.Artist.Any(x => x.Id == artist.Id))
+            // Fix this bug
+            var existingArtist = GetByIdAsNoTracking<Artist>(artist.Id);
+
+            if (existingArtist == null)
                 return NotFound();
 
-
-            _applicationDbcontext
-                .Set<Artist>()
-                .Update(artist);
-            _applicationDbcontext.SaveChanges();
+            Update(artist);
 
             TempData["success"] = "Artist updated successfully";
             return RedirectToAction("Index");
@@ -78,9 +70,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = _applicationDbcontext
-              .Artist
-              .Find(parsedId);
+            var artist = GetById<Artist>(parsedId);
 
             if (artist == null)
                 return NotFound();
@@ -95,20 +85,64 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = _applicationDbcontext
-              .Artist
-              .Find(parsedId);
+            var artist = GetByIdAsNoTracking<Artist>(parsedId);
 
             if (artist == null)
                 return NotFound();
 
-            _applicationDbcontext
-                .Set<Artist>()
-                .Remove(artist);
-            _applicationDbcontext.SaveChanges();
+            Delete(artist);
 
             TempData["success"] = "Artist deleted successfully";
             return RedirectToAction("Index");
         }
+
+        #region Refactored CRUD with clean code
+        private IEnumerable<T> GetAll<T>()
+            where T : class
+        {
+            IQueryable<T> query = _applicationDbcontext.Set<T>();
+            return query.ToList();
+        }
+
+        public T? GetById<T>(Guid id)
+            where T : class
+        {
+            T? t = _applicationDbcontext.Set<T>().Find(id);
+            return t;
+        }
+
+        public T? GetByIdAsNoTracking<T>(Guid id)
+           where T : class
+        {
+            T? t = _applicationDbcontext.Set<T>().Find(id);
+            if (t != null)
+            {
+                _applicationDbcontext.Entry(t).State = EntityState.Detached;
+            }
+
+            return t;
+        }
+
+        public void Add<T>(T entity)
+            where T : class
+        {
+            _applicationDbcontext.Add(entity);
+            _applicationDbcontext.SaveChanges();
+        }
+
+        public void Update<T>(T entity)
+            where T : class
+        {
+            _applicationDbcontext.Update(entity);
+            _applicationDbcontext.SaveChanges();
+        }
+
+        public void Delete<T>(T entity)
+            where T : class
+        {
+            _applicationDbcontext.Remove(entity);
+            _applicationDbcontext.SaveChanges();
+        }
+        #endregion
     }
 }
