@@ -53,7 +53,6 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(artist);
 
-            // Fix this bug
             var existingArtist = GetByIdAsNoTracking<Artist>(artist.Id);
 
             if (existingArtist == null)
