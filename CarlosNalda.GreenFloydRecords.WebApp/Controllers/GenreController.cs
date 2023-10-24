@@ -62,7 +62,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(genre);
 
-            var existingGenre = _genreRepository.GetByIdAsNoTrackingAsync(genre.Id);
+            var existingGenre = await _genreRepository.GetByIdAsNoTrackingAsync(genre.Id);
 
             if (existingGenre == null)
                 return NotFound();
