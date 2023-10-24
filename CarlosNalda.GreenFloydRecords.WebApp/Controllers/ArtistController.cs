@@ -1,4 +1,5 @@
 ﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
+using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,15 +7,16 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
     public class ArtistController : Controller
     {
-        private readonly ApplicationDbContext _applicationDbcontext;
-        public ArtistController(ApplicationDbContext applicationDbContext)
+        private readonly IArtistRepository _artistRepository;
+
+        public ArtistController(IArtistRepository artistRepository)
         {
-            _applicationDbcontext = applicationDbContext;
+            _artistRepository = artistRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var artist = GetAll<Artist>();
+            var artist = await _artistRepository.ListAllAsync();
             return View(artist);
         }
 
@@ -22,23 +24,23 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Artist artist)
+        public async Task<IActionResult> Create(Artist artist)
         {
             if (!ModelState.IsValid)
                 return View(artist);
 
-            Add(artist);
+            await _artistRepository.AddAsync(artist);
 
             TempData["success"] = "Artist created successfully";
             return RedirectToAction("Index");
         }
 
-        public IActionResult Edit(string? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = GetById<Artist>(parsedId);
+            var artist = await _artistRepository.GetByIdAsync(parsedId);
 
             if (artist == null)
                 return NotFound();
@@ -48,28 +50,28 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Artist artist)
+        public async Task<IActionResult> Edit(Artist artist)
         {
             if (!ModelState.IsValid)
                 return View(artist);
 
-            var existingArtist = GetByIdAsNoTracking<Artist>(artist.Id);
+            var existingArtist = await _artistRepository.GetByIdAsNoTrackingAsync(artist.Id);
 
             if (existingArtist == null)
                 return NotFound();
 
-            Update(artist);
+            await _artistRepository.UpdateAsync(artist);
 
             TempData["success"] = "Artist updated successfully";
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(string? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = GetById<Artist>(parsedId);
+            var artist = await _artistRepository.GetByIdAsync(parsedId);
 
             if (artist == null)
                 return NotFound();
@@ -79,69 +81,20 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteWithPost(string? id)
+        public async Task<IActionResult> DeleteWithPost(string? id)
         {
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = GetByIdAsNoTracking<Artist>(parsedId);
+            var artist = await _artistRepository.GetByIdAsNoTrackingAsync(parsedId);
 
             if (artist == null)
                 return NotFound();
 
-            Delete(artist);
+            await _artistRepository.DeleteAsync(artist);
 
             TempData["success"] = "Artist deleted successfully";
             return RedirectToAction("Index");
         }
-
-        #region Refactored CRUD with clean code
-        private IEnumerable<T> GetAll<T>()
-            where T : class
-        {
-            IQueryable<T> query = _applicationDbcontext.Set<T>();
-            return query.ToList();
-        }
-
-        public T? GetById<T>(Guid id)
-            where T : class
-        {
-            T? t = _applicationDbcontext.Set<T>().Find(id);
-            return t;
-        }
-
-        public T? GetByIdAsNoTracking<T>(Guid id)
-           where T : class
-        {
-            T? t = _applicationDbcontext.Set<T>().Find(id);
-            if (t != null)
-            {
-                _applicationDbcontext.Entry(t).State = EntityState.Detached;
-            }
-
-            return t;
-        }
-
-        public void Add<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Add(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-
-        public void Update<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Update(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-
-        public void Delete<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Remove(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-        #endregion
     }
 }

@@ -1,4 +1,6 @@
 ﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
+using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
+using CarlosNalda.GreenFloydRecords.WebApp.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,16 +8,16 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
     public class GenreController : Controller
     {
-        private readonly ApplicationDbContext _applicationDbcontext;
+        private readonly IGenreRepository _genreRepository;
 
-        public GenreController(ApplicationDbContext applicationDbContext)
+        public GenreController(IGenreRepository genreRepository)
         {
-            _applicationDbcontext = applicationDbContext;
+            _genreRepository = genreRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var genres = GetAll<Genre>();
+            var genres = await _genreRepository.ListAllAsync();
             return View(genres);
         }
 
@@ -23,7 +25,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Genre genre)
+        public async Task<IActionResult> Create(Genre genre)
         {
             if (char.IsDigit(genre.Name.ToCharArray()[0]))
                 ModelState.AddModelError("name", "Name can not start with digit.");
@@ -31,18 +33,18 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(genre);
 
-            Add(genre);
+            await _genreRepository.AddAsync(genre);
 
             TempData["success"] = "Genre created successfully";
             return RedirectToAction("Index");
         }
 
-        public IActionResult Edit(string? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var genre = GetById<Genre>(parsedId);
+            var genre = await _genreRepository.GetByIdAsync(parsedId);
 
             if (genre == null)
                 return NotFound();
@@ -52,7 +54,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Genre genre)
+        public async Task<IActionResult> Edit(Genre genre)
         {
             if (char.IsDigit(genre.Name.ToCharArray()[0]))
                 ModelState.AddModelError("name", "Name can not start with digit.");
@@ -60,23 +62,23 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!ModelState.IsValid)
                 return View(genre);
 
-            var existingGenre = GetByIdAsNoTracking<Genre>(genre.Id);
+            var existingGenre = _genreRepository.GetByIdAsNoTrackingAsync(genre.Id);
 
             if (existingGenre == null)
                 return NotFound();
 
-            Update(genre);
+            await _genreRepository.UpdateAsync(genre);
 
             TempData["success"] = "Genre updated successfully";
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(string? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var genre = GetById<Genre>(parsedId);
+            var genre = await _genreRepository.GetByIdAsync(parsedId);
 
             if (genre == null)
                 return NotFound();
@@ -86,69 +88,20 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteWithPost(string? id)
+        public async Task<IActionResult> DeleteWithPost(string? id)
         {
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var genre = GetByIdAsNoTracking<Genre>(parsedId);
+            var genre = await _genreRepository.GetByIdAsNoTrackingAsync(parsedId);
 
             if (genre == null)
                 return NotFound();
 
-            Delete(genre);
+            await _genreRepository.DeleteAsync(genre);
 
             TempData["success"] = "Genre deleted successfully";
             return RedirectToAction("Index");
         }
-
-        #region Refactored CRUD with clean code
-        private IEnumerable<T> GetAll<T>()
-            where T : class
-        {
-            IQueryable<T> query = _applicationDbcontext.Set<T>();
-            return query.ToList();
-        }
-
-        public T? GetById<T>(Guid id)
-            where T : class
-        {
-            T? t = _applicationDbcontext.Set<T>().Find(id);
-            return t;
-        }
-
-        public T? GetByIdAsNoTracking<T>(Guid id)
-           where T : class
-        {
-            T? t = _applicationDbcontext.Set<T>().Find(id);
-            if (t != null)
-            {
-                _applicationDbcontext.Entry(t).State = EntityState.Detached;
-            }
-
-            return t;
-        }
-
-        public void Add<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Add(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-
-        public void Update<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Update(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-
-        public void Delete<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Remove(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-        #endregion
     }
 }

@@ -5,41 +5,24 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Linq;
+using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _applicationDbcontext;
+        private readonly IVinylRecordRepository _vinylRecordRepository;
 
-        public HomeController(ILogger<HomeController> logger,
-            ApplicationDbContext applicationDbcontext)
+        public HomeController(IVinylRecordRepository vinylRecordRepository)
         {
-            _logger = logger;
-            _applicationDbcontext = applicationDbcontext;
+            _vinylRecordRepository = vinylRecordRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<VinylRecord> list = GetAll<VinylRecord>(includeProperties: "Artist,Genre");
+            IEnumerable<VinylRecord> list = 
+                await _vinylRecordRepository.ListAllAsync(includeProperties: "Artist,Genre");
             return View(list);
         }
-
-        #region Refactored CRUD with clean code
-        private IEnumerable<T> GetAll<T>(string? includeProperties = null)
-              where T : class
-        {
-            IQueryable<T> query = _applicationDbcontext.Set<T>();
-            if (includeProperties != null)
-            {
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
-            }
-            return query.ToList();
-        }
-        #endregion
     }
 }

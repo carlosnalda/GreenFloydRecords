@@ -1,6 +1,9 @@
 using CarlosNalda.GreenFloydRecords.WebApp.Data;
+using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
+using CarlosNalda.GreenFloydRecords.WebApp.Data.Repositories;
 using CarlosNalda.GreenFloydRecords.WebApp.DatabaseInitializer;
 using CarlosNalda.GreenFloydRecords.WebApp.ImageFileInitializer;
+using CarlosNalda.GreenFloydRecords.WebApp.Infrastructure.ImageManager;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp
@@ -20,9 +23,13 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
                 .Services
                 .AddDbContext<ApplicationDbContext>(options => options
                     .UseSqlServer(connectionString));
-
+            builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
+            builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+            builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
+            builder.Services.AddScoped<IVinylRecordRepository, VinylRecordRepository>();
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             builder.Services.AddScoped<IDefaultImageFileInitializer, DefaultImageFileInitializer>();
+            builder.Services.AddScoped<IImageFileManager, ImageFileManager>();
 
             builder.Services.AddControllersWithViews();
 

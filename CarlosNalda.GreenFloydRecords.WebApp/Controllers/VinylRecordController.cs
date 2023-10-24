@@ -1,32 +1,34 @@
-﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
-using CarlosNalda.GreenFloydRecords.WebApp.ImageFileInitializer;
+﻿using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
+using CarlosNalda.GreenFloydRecords.WebApp.Infrastructure.ImageManager;
 using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
     public class VinylRecordController : Controller
     {
-        private readonly ApplicationDbContext _applicationDbcontext;
-        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IVinylRecordRepository _vinylRecordRepository;
+        private readonly IGenreRepository _genreRepository;
+        private readonly IArtistRepository _artistRepository;
+        private readonly IImageFileManager _imageFileManager;
 
-        public VinylRecordController(ApplicationDbContext appTemplateContext,
-            IWebHostEnvironment hostEnvironment)
+        public VinylRecordController(IVinylRecordRepository vinylRecordRepository,
+            IGenreRepository genreRepository,
+            IArtistRepository artistRepository,
+            IImageFileManager imageFileManager)
         {
-            _applicationDbcontext = appTemplateContext ?? throw new ArgumentNullException(nameof(appTemplateContext));
-            _hostEnvironment = hostEnvironment;
+            _vinylRecordRepository = vinylRecordRepository ?? throw new ArgumentNullException(nameof(vinylRecordRepository));
+            _genreRepository = genreRepository;
+            _artistRepository = artistRepository;
+            _imageFileManager = imageFileManager;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
-        public IActionResult Upsert(string? id)
+        public async Task<IActionResult> Upsert(string? id)
         {
-            VinylRecordVM VinylRecordVm = GetVinylRecordVm();
+            VinylRecordVM VinylRecordVm = await GetVinylRecordVmAsync();
 
             if (string.IsNullOrEmpty(id))
             {
@@ -36,7 +38,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            VinylRecordVm.VinylRecord = GetByIdAsNoTracking<VinylRecord>(parsedId);
+            VinylRecordVm.VinylRecord = await _vinylRecordRepository.GetByIdAsNoTrackingAsync(parsedId);
 
             if (VinylRecordVm.VinylRecord == null)
             {
@@ -49,13 +51,13 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(VinylRecordVM viewModel, IFormFile? file)
+        public async Task<IActionResult> Upsert(VinylRecordVM viewModel, IFormFile? file)
         {
             if (!ModelState.IsValid)
             {
-                viewModel.GenreList = GetAll<Genre>()
-                  .Select(g => MutateToSelectListItem(g.Id, g.Name));
-                viewModel.ArtistList = GetAll<Artist>()
+                viewModel.GenreList = (await _genreRepository.ListAllAsync())
+                    .Select(g => MutateToSelectListItem(g.Id, g.Name));
+                viewModel.ArtistList = (await _artistRepository.ListAllAsync())
                     .Select(a => MutateToSelectListItem(a.Id, a.Name)).ToList();
 
                 return View(viewModel);
@@ -63,22 +65,22 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
             if (file != null)
             {
-                viewModel.VinylRecord.ImageUrl = UpsertFile(file, viewModel.VinylRecord.ImageUrl);
+                viewModel.VinylRecord.ImageUrl = _imageFileManager.UpsertFile(file, viewModel.VinylRecord.ImageUrl);
             }
 
             if (viewModel.VinylRecord.Id == default)
             {
-                Add(viewModel.VinylRecord);
+                await _vinylRecordRepository.AddAsync(viewModel.VinylRecord);
             }
             else
             {
-                var vinylRecord = GetByIdAsNoTracking<VinylRecord>(viewModel.VinylRecord.Id);
+                var vinylRecord = await _vinylRecordRepository.GetByIdAsNoTrackingAsync(viewModel.VinylRecord.Id);
                 if (vinylRecord == null)
                 {
                     return NotFound();
                 }
 
-                Update(viewModel.VinylRecord);
+                await _vinylRecordRepository.UpdateAsync(viewModel.VinylRecord);
             }
 
             TempData["success"] = "Vinyl record created successfully";
@@ -87,141 +89,44 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         #region API CALLS
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var vinylRecordList = GetAll<VinylRecord>("Genre,Artist");
+            var vinylRecordList = await _vinylRecordRepository.ListAllAsync("Genre,Artist");
             return Json(new { data = vinylRecordList });
         }
 
         //POST
         [HttpDelete]
-        public IActionResult Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
 
-            var vinylRecord = GetById<VinylRecord>(id.GetValueOrDefault());
+            var vinylRecord = await _vinylRecordRepository.GetByIdAsync(id.GetValueOrDefault());
 
             if (vinylRecord == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
 
-            DeleteFile(vinylRecord.ImageUrl);
-            Delete(vinylRecord);
+            _imageFileManager.DeleteFile(vinylRecord.ImageUrl);
+            await _vinylRecordRepository.DeleteAsync(vinylRecord);
 
             return Json(new { success = true, message = "Delete Successful" });
         }
         #endregion
 
-        #region Refactored file manager
-        private string UpsertFile(IFormFile? file, string imageUrl)
-        {
-            var uploads = Path.Combine(_hostEnvironment.WebRootPath, ImageDirectoryPath.Production);
-            if (!Directory.Exists(uploads))
-            {
-                Directory.CreateDirectory(uploads);
-            }
-
-            if (imageUrl != null)
-            {
-                DeleteFile(imageUrl);
-            }
-
-            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            using (var fileStreams = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
-            {
-                file.CopyTo(fileStreams);
-            }
-
-            return $"{ImageDirectoryPath.ProductionUrl}/{fileName}";
-        }
-
-        private void DeleteFile(string imageUrl)
-        {
-            var oldImagePath =
-                $"{Path.Combine(_hostEnvironment.WebRootPath, ImageDirectoryPath.Production)}\\{Path.GetFileName(imageUrl)}";
-            if (System.IO.File.Exists(oldImagePath))
-            {
-                System.IO.File.Delete(oldImagePath);
-            }
-        }
-        #endregion Refactored file manager
-
-        #region Refactored CRUD with clean code
-        private IEnumerable<T> GetAll<T>()
-            where T : class
-        {
-            IQueryable<T> query = _applicationDbcontext.Set<T>();
-            return query.ToList();
-        }
-
-        private IEnumerable<T> GetAll<T>(string? includeProperties = null)
-           where T : class
-        {
-            IQueryable<T> query = _applicationDbcontext.Set<T>();
-            if (includeProperties != null)
-            {
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
-            }
-            return query.ToList();
-        }
-
-        public T? GetById<T>(Guid id)
-            where T : class
-        {
-            T? t = _applicationDbcontext.Set<T>().Find(id);
-            return t;
-        }
-
-        public T? GetByIdAsNoTracking<T>(Guid id)
-           where T : class
-        {
-            T? t = _applicationDbcontext.Set<T>().Find(id);
-            if (t != null)
-            {
-                _applicationDbcontext.Entry(t).State = EntityState.Detached;
-            }
-
-            return t;
-        }
-
-        public void Add<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Add(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-
-        public void Update<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Update(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-
-        public void Delete<T>(T entity)
-            where T : class
-        {
-            _applicationDbcontext.Remove(entity);
-            _applicationDbcontext.SaveChanges();
-        }
-        #endregion
-
         #region Controller private methods
-        private VinylRecordVM GetVinylRecordVm()
+        private async Task<VinylRecordVM> GetVinylRecordVmAsync()
         {
             return new VinylRecordVM
             {
                 VinylRecord = new(),
-                GenreList = GetAll<Genre>()
+                GenreList = (await _genreRepository.ListAllAsync())
                   .Select(g => MutateToSelectListItem(g.Id, g.Name)),
-                ArtistList = GetAll<Artist>()
+                ArtistList = (await _artistRepository.ListAllAsync())
                   .Select(a => MutateToSelectListItem(a.Id, a.Name))
             };
         }
