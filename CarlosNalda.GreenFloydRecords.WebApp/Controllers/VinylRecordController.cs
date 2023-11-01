@@ -1,5 +1,5 @@
-﻿using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
-using CarlosNalda.GreenFloydRecords.WebApp.Infrastructure.ImageManager;
+﻿using CarlosNalda.GreenFloydRecords.Application.Contracts.Infrastructure;
+using CarlosNalda.GreenFloydRecords.Application.Contracts.Persistence;
 using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -38,6 +38,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
+
             VinylRecordVm.VinylRecord = await _vinylRecordRepository.GetByIdAsNoTrackingAsync(parsedId);
 
             if (VinylRecordVm.VinylRecord == null)
@@ -65,7 +66,11 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
             if (file != null)
             {
-                viewModel.VinylRecord.ImageUrl = _imageFileManager.UpsertFile(file, viewModel.VinylRecord.ImageUrl);
+                using (var memoryStream = new MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    viewModel.VinylRecord.ImageUrl = _imageFileManager.UpsertFile(memoryStream, viewModel.VinylRecord.ImageUrl);
+                }
             }
 
             if (viewModel.VinylRecord.Id == default)

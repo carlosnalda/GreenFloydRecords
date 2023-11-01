@@ -1,10 +1,7 @@
-using CarlosNalda.GreenFloydRecords.WebApp.Data;
-using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
-using CarlosNalda.GreenFloydRecords.WebApp.Data.Repositories;
-using CarlosNalda.GreenFloydRecords.WebApp.DatabaseInitializer;
-using CarlosNalda.GreenFloydRecords.WebApp.ImageFileInitializer;
-using CarlosNalda.GreenFloydRecords.WebApp.Infrastructure.ImageManager;
-using Microsoft.EntityFrameworkCore;
+using CarlosNalda.GreenFloydRecords.Persistence.DatabaseInitializer;
+using CarlosNalda.GreenFloydRecords.Persistence;
+using CarlosNalda.GreenFloydRecords.Infrastructure;
+using CarlosNalda.GreenFloydRecords.Application.Contracts.Infrastructure;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp
 {
@@ -15,21 +12,8 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder
-               .Configuration
-               .GetConnectionString("ConnectionString")
-                   ?? throw new InvalidOperationException("Connection string 'ConnectionString' not found.");
-            builder
-                .Services
-                .AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlServer(connectionString));
-            builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
-            builder.Services.AddScoped<IGenreRepository, GenreRepository>();
-            builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
-            builder.Services.AddScoped<IVinylRecordRepository, VinylRecordRepository>();
-            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-            builder.Services.AddScoped<IDefaultImageFileInitializer, DefaultImageFileInitializer>();
-            builder.Services.AddScoped<IImageFileManager, ImageFileManager>();
+            builder.Services.AddPersistenceServices(builder.Configuration);
+            builder.Services.AddInfrastructureServices(builder.Configuration);
 
             builder.Services.AddControllersWithViews();
 
@@ -78,8 +62,8 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
         {
             using (var scope = app.Services.CreateScope())
             {
-                var defaultImageFileInitializer = scope.ServiceProvider.GetRequiredService<IDefaultImageFileInitializer>();
-                defaultImageFileInitializer.Initialize();
+                var defaultImageFileInitializer = scope.ServiceProvider.GetRequiredService<IImageFileManager>();
+                defaultImageFileInitializer.Seed();
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
+﻿using CarlosNalda.GreenFloydRecords.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 

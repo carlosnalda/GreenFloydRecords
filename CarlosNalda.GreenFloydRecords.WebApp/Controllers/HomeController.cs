@@ -1,11 +1,6 @@
-﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
-using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Linq;
-using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
+﻿using Microsoft.AspNetCore.Mvc;
+using CarlosNalda.GreenFloydRecords.Application.Contracts.Persistence;
+using CarlosNalda.GreenFloydRecords.Domain.Entities;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
@@ -20,7 +15,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<VinylRecord> list = 
+            IEnumerable<VinylRecord> list =
                 await _vinylRecordRepository.ListAllAsync(includeProperties: "Artist,Genre");
             return View(list);
         }

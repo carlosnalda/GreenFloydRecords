@@ -1,7 +1,6 @@
-﻿using CarlosNalda.GreenFloydRecords.WebApp.Data;
-using CarlosNalda.GreenFloydRecords.WebApp.Data.Persistence;
+﻿using CarlosNalda.GreenFloydRecords.Application.Contracts.Persistence;
+using CarlosNalda.GreenFloydRecords.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
