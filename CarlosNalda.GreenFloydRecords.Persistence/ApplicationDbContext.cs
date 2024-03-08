@@ -11,8 +11,6 @@ namespace CarlosNalda.GreenFloydRecords.Persistence
 
         public DbSet<VinylRecord> VinylRecord { get; set; }
 
-        public DbSet<Foo> Foo { get; set; }
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions)
             : base(dbContextOptions)
 
