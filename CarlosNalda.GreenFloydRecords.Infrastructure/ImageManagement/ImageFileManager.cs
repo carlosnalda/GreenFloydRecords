@@ -11,6 +11,11 @@ namespace CarlosNalda.GreenFloydRecords.Infrastructure.ImageManagement
             var files = GetImageFilesInfoFromDirectorty(defaultImagesDirectory);
 
             var imagesDirectory = GetImagesDirectory();
+            if (!Directory.Exists(imagesDirectory))
+            {
+                Directory.CreateDirectory(imagesDirectory);
+            }
+
             foreach (FileInfo file in files)
             {
                 var newFile = $"{imagesDirectory}\\{file.Name}";
