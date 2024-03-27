@@ -2,6 +2,8 @@ using CarlosNalda.GreenFloydRecords.Persistence.DatabaseInitializer;
 using CarlosNalda.GreenFloydRecords.Persistence;
 using CarlosNalda.GreenFloydRecords.Infrastructure;
 using CarlosNalda.GreenFloydRecords.Application.Contracts.Infrastructure;
+using CarlosNalda.GreenFloydRecords.Application;
+using CarlosNalda.GreenFloydRecords.WebApp.Middleware;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp
 {
@@ -12,6 +14,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddApplicationServices();
             builder.Services.AddPersistenceServices(builder.Configuration);
             builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -24,19 +27,26 @@ namespace CarlosNalda.GreenFloydRecords.WebApp
             {
                 SeedImageFiles(app);
                 SeedDatabase(app);
+
+                // app.UseCustomExceptionHandler();
             }
             else
             {
-                app.UseExceptionHandler("/InvalidAction/Error");
+                // app.UseExceptionHandler("/InvalidAction/Error");
+
+                // Hacer version para developer, que mande a una pagina not found
+                app.UseCustomExceptionHandler();
 
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/InvalidAction/PageNotFound/{0}");
+            // app.UseStatusCodePagesWithReExecute("/InvalidAction/PageNotFound/{0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // app.UseCustomExceptionHandler();
 
             app.UseRouting();
 

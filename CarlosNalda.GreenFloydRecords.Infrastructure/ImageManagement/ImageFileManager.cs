@@ -26,7 +26,7 @@ namespace CarlosNalda.GreenFloydRecords.Infrastructure.ImageManagement
             }
         }
 
-        public string UpsertFile(MemoryStream file, string existingFileImageUrl)
+        public async Task<string> UpsertFileAsync(Stream file, string existingFileImageUrl)
         {
             var uploads = Path.Combine(GetWwwRootFolder(), ImageDirectoryPath.Production);
             if (!Directory.Exists(uploads))
@@ -42,10 +42,10 @@ namespace CarlosNalda.GreenFloydRecords.Infrastructure.ImageManagement
             string fileName = $"{Guid.NewGuid()}.png";
             using (var fileStreams = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
             {
-                file.CopyTo(fileStreams);
+                await file.CopyToAsync(fileStreams);
             }
 
-            return $"{ImageDirectoryPath.ProductionUrl}/{fileName}";
+            return $"{ImageDirectoryPath.ProductionUrl}{fileName}";
         }
 
         public void DeleteFile(string imageUrl)

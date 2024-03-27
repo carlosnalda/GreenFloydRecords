@@ -1,34 +1,44 @@
-﻿using CarlosNalda.GreenFloydRecords.Application.Contracts.Persistence;
+﻿using AutoMapper;
+using CarlosNalda.GreenFloydRecords.Application.Features.Artists.Commands.CreateArtist;
+using CarlosNalda.GreenFloydRecords.Application.Features.Artists.Commands.DeleteArtist;
+using CarlosNalda.GreenFloydRecords.Application.Features.Artists.Commands.UpdateArtist;
+using CarlosNalda.GreenFloydRecords.Application.Features.Artists.Queries.GetArtistList;
+using CarlosNalda.GreenFloydRecords.Application.Features.Artists.Queries.GetSingleArtist;
 using CarlosNalda.GreenFloydRecords.Domain.Entities;
+using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
     public class ArtistController : Controller
     {
-        private readonly IArtistRepository _artistRepository;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public ArtistController(IArtistRepository artistRepository)
+        public ArtistController(IMapper mapper, IMediator mediator)
         {
-            _artistRepository = artistRepository;
+            _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task<IActionResult> Index()
         {
-            var artist = await _artistRepository.ListAllAsync();
-            return View(artist);
+            var artists = await _mediator.Send(new GetArtistListQuery());
+            return View(_mapper.Map<List<ArtistViewModel>>(artists));
         }
 
         public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Artist artist)
+        public async Task<IActionResult> Create(ArtistViewModel artist)
         {
             if (!ModelState.IsValid)
                 return View(artist);
 
-            await _artistRepository.AddAsync(artist);
+            var request = _mapper.Map<CreateArtistCommand>(artist);
+            _ = await _mediator.Send(request);
 
             TempData["success"] = "Artist created successfully";
             return RedirectToAction("Index");
@@ -39,27 +49,22 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = await _artistRepository.GetByIdAsync(parsedId);
+            var artist = await _mediator.Send(new GetSingleArtistQuery { Id = parsedId });
 
-            if (artist == null)
-                return NotFound();
-
-            return View(artist);
+            return View(_mapper.Map<ArtistViewModel>(artist));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Artist artist)
+        public async Task<IActionResult> Edit(ArtistViewModel artist)
         {
             if (!ModelState.IsValid)
                 return View(artist);
 
-            var existingArtist = await _artistRepository.GetByIdAsNoTrackingAsync(artist.Id);
+            _ = await _mediator.Send(new GetSingleArtistQuery { Id = artist.Id });
 
-            if (existingArtist == null)
-                return NotFound();
-
-            await _artistRepository.UpdateAsync(artist);
+            var request = _mapper.Map<UpdateArtistCommand>(artist);
+            await _mediator.Send(request);
 
             TempData["success"] = "Artist updated successfully";
             return RedirectToAction("Index");
@@ -70,12 +75,9 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = await _artistRepository.GetByIdAsync(parsedId);
+            var artist = await _mediator.Send(new GetSingleArtistQuery { Id = parsedId });
 
-            if (artist == null)
-                return NotFound();
-
-            return View(artist);
+            return View(_mapper.Map<ArtistViewModel>(artist));
         }
 
         [HttpPost, ActionName("Delete")]
@@ -85,12 +87,10 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-            var artist = await _artistRepository.GetByIdAsNoTrackingAsync(parsedId);
+            _ = await _mediator.Send(new GetSingleArtistQuery { Id = parsedId });
 
-            if (artist == null)
-                return NotFound();
+            await _mediator.Send(new DeleteArtistCommand { Id = parsedId });
 
-            await _artistRepository.DeleteAsync(artist);
 
             TempData["success"] = "Artist deleted successfully";
             return RedirectToAction("Index");

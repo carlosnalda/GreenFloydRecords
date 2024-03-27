@@ -6,6 +6,6 @@
 
         void DeleteFile(string imageUrl);
 
-        string UpsertFile(MemoryStream file, string existingFileImageUrl);
+        Task<string> UpsertFileAsync(Stream file, string existingFileImageUrl);
     }
 }

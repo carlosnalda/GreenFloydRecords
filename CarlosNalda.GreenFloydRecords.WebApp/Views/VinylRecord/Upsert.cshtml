@@ -1,4 +1,4 @@
-﻿@model CarlosNalda.GreenFloydRecords.WebApp.ViewModels.VinylRecordVM
+﻿@model CarlosNalda.GreenFloydRecords.WebApp.ViewModels.VinylRecordUserInterfaceViewModel
 
 <form method="post" asp-action="Upsert" enctype="multipart/form-data">
     <input asp-for="VinylRecord.Id" hidden />
@@ -76,7 +76,7 @@
     </div>
 </form>
 
-@section Scripts{
+@section Scripts {
     @{
         <partial name="_ValidationScriptsPartial" />
     }

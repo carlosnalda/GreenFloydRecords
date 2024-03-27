@@ -1,6 +1,14 @@
-﻿using CarlosNalda.GreenFloydRecords.Application.Contracts.Infrastructure;
-using CarlosNalda.GreenFloydRecords.Application.Contracts.Persistence;
+﻿using AutoMapper;
+using CarlosNalda.GreenFloydRecords.Application.Contracts.Infrastructure;
+using CarlosNalda.GreenFloydRecords.Application.Features.Artists.Queries.GetArtistList;
+using CarlosNalda.GreenFloydRecords.Application.Features.Genres.Queries.GetGenreList;
+using CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Commands.CreateVinylRecord;
+using CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Commands.DeleteVinylRecord;
+using CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Commands.UpdateVinylRecord;
+using CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Queries.GetSingleVinylRecord;
+using CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Queries.GetVinylRecordList;
 using CarlosNalda.GreenFloydRecords.WebApp.ViewModels;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -8,19 +16,16 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 {
     public class VinylRecordController : Controller
     {
-        private readonly IVinylRecordRepository _vinylRecordRepository;
-        private readonly IGenreRepository _genreRepository;
-        private readonly IArtistRepository _artistRepository;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
         private readonly IImageFileManager _imageFileManager;
 
-        public VinylRecordController(IVinylRecordRepository vinylRecordRepository,
-            IGenreRepository genreRepository,
-            IArtistRepository artistRepository,
+        public VinylRecordController(IMapper mapper,
+            IMediator mediator,
             IImageFileManager imageFileManager)
         {
-            _vinylRecordRepository = vinylRecordRepository ?? throw new ArgumentNullException(nameof(vinylRecordRepository));
-            _genreRepository = genreRepository;
-            _artistRepository = artistRepository;
+            _mapper = mapper;
+            _mediator = mediator;
             _imageFileManager = imageFileManager;
         }
 
@@ -28,37 +33,32 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
         public async Task<IActionResult> Upsert(string? id)
         {
-            VinylRecordVM VinylRecordVm = await GetVinylRecordVmAsync();
+            VinylRecordUserInterfaceViewModel VinylRecordVm = await GetVinylRecordVmAsync();
 
             if (string.IsNullOrEmpty(id))
-            {
                 return View(VinylRecordVm);
-            }
 
             if (!Guid.TryParse(id, out Guid parsedId))
                 return NotFound();
 
-
-            VinylRecordVm.VinylRecord = await _vinylRecordRepository.GetByIdAsNoTrackingAsync(parsedId);
+            var vinylRecord = await _mediator.Send(new GetSingleVinylRecordQuery() { Id = parsedId });
+            VinylRecordVm.VinylRecord = _mapper.Map<VinylRecordViewModel>(vinylRecord);
 
             if (VinylRecordVm.VinylRecord == null)
-            {
                 return NotFound();
-            }
 
             return View(VinylRecordVm);
         }
 
-        //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(VinylRecordVM viewModel, IFormFile? file)
+        public async Task<IActionResult> Upsert(VinylRecordUserInterfaceViewModel viewModel, IFormFile? file)
         {
             if (!ModelState.IsValid)
             {
-                viewModel.GenreList = (await _genreRepository.ListAllAsync())
+                viewModel.GenreList = (await _mediator.Send(new GetGenreListQuery()))
                     .Select(g => MutateToSelectListItem(g.Id, g.Name));
-                viewModel.ArtistList = (await _artistRepository.ListAllAsync())
+                viewModel.ArtistList = (await _mediator.Send(new GetArtistListQuery()))
                     .Select(a => MutateToSelectListItem(a.Id, a.Name)).ToList();
 
                 return View(viewModel);
@@ -66,26 +66,21 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
 
             if (file != null)
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await file.CopyToAsync(memoryStream);
-                    viewModel.VinylRecord.ImageUrl = _imageFileManager.UpsertFile(memoryStream, viewModel.VinylRecord.ImageUrl);
-                }
+                viewModel.VinylRecord.ImageUrl = await _imageFileManager.UpsertFileAsync(file.OpenReadStream(), viewModel.VinylRecord.ImageUrl);
             }
 
             if (viewModel.VinylRecord.Id == default)
             {
-                await _vinylRecordRepository.AddAsync(viewModel.VinylRecord);
+                var createVinylRecordCommand = _mapper.Map<CreateVinylRecordCommand>(viewModel.VinylRecord);
+                _ = await _mediator.Send(createVinylRecordCommand);
             }
             else
             {
-                var vinylRecord = await _vinylRecordRepository.GetByIdAsNoTrackingAsync(viewModel.VinylRecord.Id);
-                if (vinylRecord == null)
-                {
-                    return NotFound();
-                }
 
-                await _vinylRecordRepository.UpdateAsync(viewModel.VinylRecord);
+                _ = await _mediator.Send(new GetSingleVinylRecordQuery() { Id = viewModel.VinylRecord.Id });
+
+                var updateVinylRecordCommand = _mapper.Map<UpdateVinylRecordCommand>(viewModel.VinylRecord);
+                await _mediator.Send(updateVinylRecordCommand);
             }
 
             TempData["success"] = "Vinyl record created successfully";
@@ -96,7 +91,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var vinylRecordList = await _vinylRecordRepository.ListAllAsync("Genre,Artist");
+            var vinylRecordList = await _mediator.Send(new GetVinylRecordListQuery() { includeProperties = "Genre,Artist" });
             return Json(new { data = vinylRecordList });
         }
 
@@ -105,45 +100,41 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
-            {
                 return Json(new { success = false, message = "Error while deleting" });
-            }
 
-            var vinylRecord = await _vinylRecordRepository.GetByIdAsync(id.GetValueOrDefault());
+            // To check if exist, could be better if implementing a GetFirstOrDefaultVinylRecordQuery or CheckIfExistsVinylRecordQuery
+            var vinylRecord = await _mediator.Send(new GetSingleVinylRecordQuery() { Id = id.GetValueOrDefault() });
 
             if (vinylRecord == null)
-            {
                 return Json(new { success = false, message = "Error while deleting" });
-            }
 
+            // Que pasa si aqui le meto una excepcion
             _imageFileManager.DeleteFile(vinylRecord.ImageUrl);
-            await _vinylRecordRepository.DeleteAsync(vinylRecord);
+            await _mediator.Send(new DeleteVinylRecordCommand { Id = id.Value });
 
             return Json(new { success = true, message = "Delete Successful" });
         }
         #endregion
 
         #region Controller private methods
-        private async Task<VinylRecordVM> GetVinylRecordVmAsync()
+        private async Task<VinylRecordUserInterfaceViewModel> GetVinylRecordVmAsync()
         {
-            return new VinylRecordVM
+            return new VinylRecordUserInterfaceViewModel
             {
                 VinylRecord = new(),
-                GenreList = (await _genreRepository.ListAllAsync())
+                GenreList = (await _mediator.Send(new GetGenreListQuery()))
                   .Select(g => MutateToSelectListItem(g.Id, g.Name)),
-                ArtistList = (await _artistRepository.ListAllAsync())
+                ArtistList = (await _mediator.Send(new GetArtistListQuery()))
                   .Select(a => MutateToSelectListItem(a.Id, a.Name))
             };
         }
 
-        private SelectListItem MutateToSelectListItem(Guid id, string text)
-        {
-            return new SelectListItem
+        private SelectListItem MutateToSelectListItem(Guid id, string text) =>
+            new SelectListItem
             {
                 Value = id.ToString(),
                 Text = text,
             };
-        }
         #endregion
     }
 }

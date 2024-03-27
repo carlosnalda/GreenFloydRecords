@@ -12,7 +12,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [Route("InvalidAction/PageNotFound/404")]
+        [Route("InvalidAction/PageNotFound")]
         public IActionResult PageNotFound()
         {
             return View();

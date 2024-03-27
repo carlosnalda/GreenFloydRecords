@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.ViewModels
 {
-    public class VinylRecordVM
+    public class VinylRecordUserInterfaceViewModel
     {
-        public VinylRecord VinylRecord { get; set; }
+        public VinylRecordViewModel? VinylRecord { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> GenreList { get; set; }
