@@ -5,13 +5,15 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarlosNalda.GreenFloydRecords.WebApp", "CarlosNalda.GreenFloydRecords.WebApp\CarlosNalda.GreenFloydRecords.WebApp.csproj", "{A326A9EA-E3B2-43D0-A8D0-AA2495266AED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarlosNalda.GreenFloydRecords.Application", "CarlosNalda.GreenFloydRecords.Application\CarlosNalda.GreenFloydRecords.Application.csproj", "{DD5BB976-8BA1-4A63-B885-39BB5498176B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarlosNalda.GreenFloydRecords.Application", "CarlosNalda.GreenFloydRecords.Application\CarlosNalda.GreenFloydRecords.Application.csproj", "{DD5BB976-8BA1-4A63-B885-39BB5498176B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarlosNalda.GreenFloydRecords.Domain", "CarlosNalda.GreenFloydRecords.Domain\CarlosNalda.GreenFloydRecords.Domain.csproj", "{0D589708-F41A-42EF-ABE7-BAE088931E86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarlosNalda.GreenFloydRecords.Domain", "CarlosNalda.GreenFloydRecords.Domain\CarlosNalda.GreenFloydRecords.Domain.csproj", "{0D589708-F41A-42EF-ABE7-BAE088931E86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarlosNalda.GreenFloydRecords.Persistence", "CarlosNalda.GreenFloydRecords.Persistence\CarlosNalda.GreenFloydRecords.Persistence.csproj", "{859A946C-8D7F-45B4-A6ED-C238590C5532}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarlosNalda.GreenFloydRecords.Persistence", "CarlosNalda.GreenFloydRecords.Persistence\CarlosNalda.GreenFloydRecords.Persistence.csproj", "{859A946C-8D7F-45B4-A6ED-C238590C5532}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarlosNalda.GreenFloydRecords.Infrastructure", "CarlosNalda.GreenFloydRecords.Infrastructure\CarlosNalda.GreenFloydRecords.Infrastructure.csproj", "{2775AFE6-89D2-4EBA-AEE0-7DAC5B2C920C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarlosNalda.GreenFloydRecords.Infrastructure", "CarlosNalda.GreenFloydRecords.Infrastructure\CarlosNalda.GreenFloydRecords.Infrastructure.csproj", "{2775AFE6-89D2-4EBA-AEE0-7DAC5B2C920C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarlosNalda.GreenFloydRecords.Api", "CarlosNalda.GreenFloydRecords.Api\CarlosNalda.GreenFloydRecords.Api.csproj", "{BCF75383-3CF9-4E64-AE12-8BFE8747F903}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{2775AFE6-89D2-4EBA-AEE0-7DAC5B2C920C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2775AFE6-89D2-4EBA-AEE0-7DAC5B2C920C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2775AFE6-89D2-4EBA-AEE0-7DAC5B2C920C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCF75383-3CF9-4E64-AE12-8BFE8747F903}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF75383-3CF9-4E64-AE12-8BFE8747F903}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF75383-3CF9-4E64-AE12-8BFE8747F903}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF75383-3CF9-4E64-AE12-8BFE8747F903}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,80 @@
+{
+	"info": {
+		"_postman_id": "c3acd07a-933a-403f-9d88-fbb98b0f8db6",
+		"name": "GreenFloydRecords",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9642821"
+	},
+	"item": [
+		{
+			"name": "POST Genres (WRONG)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7069/api/genre",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7069",
+					"path": [
+						"api",
+						"genre"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Genre (WRONG with bad name)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7069/api/getgenre/7468a912-88bc-4f87-b8bc-d45885a47f40",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7069",
+					"path": [
+						"api",
+						"getgenre",
+						"7468a912-88bc-4f87-b8bc-d45885a47f40"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Genre (WRONG with bad name)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Test Genre\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7069/api/genres",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7069",
+					"path": [
+						"api",
+						"genres"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
