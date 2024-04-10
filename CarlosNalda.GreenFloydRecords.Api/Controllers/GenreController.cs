@@ -26,8 +26,6 @@ namespace CarlosNalda.GreenFloydRecords.Api.Controllers
         [HttpPost("api/genre")]
         public async Task<ActionResult<IEnumerable<GenreVm>>> GetGenres()
         {
-            // throw new Exception("Test exception for exception manager");
-
             var dtos = await _mediator.Send(new GetGenreListQuery());
             return Ok(dtos);
         }
