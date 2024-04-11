@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarlosNalda.GreenFloydRecords.Api.Controllers
 {
     [ApiController]
+    [Route("api/genres")]
     public class GenreController : Controller
     {
         private readonly IMediator _mediator;
@@ -23,28 +24,29 @@ namespace CarlosNalda.GreenFloydRecords.Api.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpPost("api/genre")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<GenreVm>>> GetGenres()
         {
             var dtos = await _mediator.Send(new GetGenreListQuery());
             return Ok(dtos);
         }
 
-        [HttpGet("api/getgenre/{genreId}")]
+        [HttpGet("{genreId}", Name = "GetGenre")]
         public async Task<ActionResult<GenreVm>> GetGenre(Guid genreId)
         {
             var dto = await _mediator.Send(new GetSingleGenreQuery { Id = genreId });
             return Ok(dto);
         }
 
-
-        [HttpPost("api/genres")]
+        [HttpPost]
         public async Task<ActionResult> CreateGenre([FromBody] CreateGenreCommand createGenreCommand)
         {
             var createdId = await _mediator.Send(createGenreCommand);
             var genreToReturn = _mapper.Map<GenreVm>(createGenreCommand);
             genreToReturn.Id = createdId;
-            return Ok();
+            return CreatedAtRoute("GetGenre",
+                new { genreId = genreToReturn.Id },
+                genreToReturn);
         }
     }
 }

@@ -75,6 +75,76 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET Genres",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7069/api/genres",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7069",
+					"path": [
+						"api",
+						"genres"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Single Genre",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7069/api/genres/e9032a4f-7054-4ee3-9692-5c007fc33b7d",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7069",
+					"path": [
+						"api",
+						"genres",
+						"e9032a4f-7054-4ee3-9692-5c007fc33b7d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Single Genre",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Test Genre\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7069/api/genres",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7069",
+					"path": [
+						"api",
+						"genres"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
