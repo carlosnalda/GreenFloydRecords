@@ -66,6 +66,32 @@ namespace CarlosNalda.GreenFloydRecords.Infrastructure.ImageManagement
         {
             var directoryNode = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var foundDirectory = new DirectoryInfo(directoryNode);
+
+            // I changed this implementation to take web app wwwroot folder
+            // to insert images on web app directory.
+            while (foundDirectory.Name != "GreenFloydRecords")
+            {
+                directoryNode = Directory.GetParent(directoryNode).FullName;
+                foundDirectory = new DirectoryInfo(directoryNode);
+            }
+
+            var specificDirectory = Directory
+                .GetDirectories(directoryNode)
+                .FirstOrDefault(directory => directory.Contains("CarlosNalda.GreenFloydRecords.WebApp"));
+
+            var wwwRootDirectory = Path.Combine(specificDirectory, ImageDirectoryPath.wwwRoot);
+            if (!Directory.Exists(wwwRootDirectory))
+            {
+                return string.Empty;
+            }
+
+            return wwwRootDirectory;
+        }
+
+        private string GetWwwRootFolderForWebApi()
+        {
+            var directoryNode = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var foundDirectory = new DirectoryInfo(directoryNode);
             while (foundDirectory.Name != "CarlosNalda.GreenFloydRecords.WebApp")
             {
                 directoryNode = Directory.GetParent(directoryNode).FullName;

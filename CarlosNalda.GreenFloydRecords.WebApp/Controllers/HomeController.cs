@@ -22,7 +22,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
         public async Task<IActionResult> Index()
         {
             IEnumerable<VinylRecordVm> list =
-                await _mediator.Send(new GetVinylRecordListQuery() { includeProperties = "Genre,Artist" });
+                await _mediator.Send(new GetVinylRecordListQuery() { IncludeProperties = "Genre,Artist" });
             return View(_mapper.Map<IEnumerable<VinylRecordViewModel>>(list));
         }
     }

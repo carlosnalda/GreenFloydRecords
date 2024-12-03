@@ -20,11 +20,13 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Profiles
         public MappingProfile()
         {
             CreateMap<GenreViewModel, GenreVm>().ReverseMap();
+            CreateMap<GenreViewModel, GenreDto>().ReverseMap();
             CreateMap<GenreViewModel, CreateGenreCommand>().ReverseMap();
             CreateMap<GenreViewModel, UpdateGenreCommand>().ReverseMap();
             CreateMap<GenreViewModel, DeleteGenreCommand>().ReverseMap();
 
             CreateMap<ArtistViewModel, ArtistVm>().ReverseMap();
+            CreateMap<ArtistViewModel, ArtistDto>().ReverseMap();
             CreateMap<ArtistViewModel, CreateArtistCommand>().ReverseMap();
             CreateMap<ArtistViewModel, UpdateArtistCommand>().ReverseMap();
             CreateMap<ArtistViewModel, DeleteArtistCommand>().ReverseMap();

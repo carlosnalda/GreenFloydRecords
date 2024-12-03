@@ -11,5 +11,8 @@ namespace CarlosNalda.GreenFloydRecords.Domain.Entities
         [Required]
         [DisplayName("Genre Name")]
         public string Name { get; set; }
+
+        public ICollection<VinylRecord> VinylRecords { get; set; } =
+           new List<VinylRecord>();
     }
 }

@@ -2,13 +2,12 @@
 using CarlosNalda.GreenFloydRecords.Application.Contracts.Infrastructure;
 using CarlosNalda.GreenFloydRecords.Application.Contracts.Persistence;
 using CarlosNalda.GreenFloydRecords.Application.Exceptions;
-using CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Commands.UpdateVinylRecord;
 using CarlosNalda.GreenFloydRecords.Domain.Entities;
 using MediatR;
 
-namespace CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Commands.UpdateVinylRecord;
+namespace CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Commands.PartialUpdateVinylRecord;
 
-public class UpdateVinylRecordCommandHandler : IRequestHandler<UpdateVinylRecordCommand>
+public class PartialUpdateVinylRecordCommandHandler : IRequestHandler<PartialUpdateVinylRecordCommand>
 {
     private readonly IAsyncRepository<VinylRecord> _vinylRecordrepository;
     private readonly IAsyncRepository<Artist> _artistRepository;
@@ -16,7 +15,7 @@ public class UpdateVinylRecordCommandHandler : IRequestHandler<UpdateVinylRecord
     private readonly IMapper _mapper;
     private readonly IImageFileManager _imageFileManager;
 
-    public UpdateVinylRecordCommandHandler(IMapper mapper,
+    public PartialUpdateVinylRecordCommandHandler(IMapper mapper,
          IAsyncRepository<VinylRecord> vinylRecordrepository,
          IAsyncRepository<Artist> artistRepository,
          IAsyncRepository<Genre> genreRepository,
@@ -29,7 +28,7 @@ public class UpdateVinylRecordCommandHandler : IRequestHandler<UpdateVinylRecord
         _imageFileManager = imageFileManager;
     }
 
-    public async Task Handle(UpdateVinylRecordCommand request, CancellationToken cancellationToken)
+    public async Task Handle(PartialUpdateVinylRecordCommand request, CancellationToken cancellationToken)
     {
         var vinylRecordToUpdate = await _vinylRecordrepository
             .GetByIdAsync(request.Id);
@@ -57,7 +56,7 @@ public class UpdateVinylRecordCommandHandler : IRequestHandler<UpdateVinylRecord
             request.ImageUrl = await _imageFileManager.UpsertFileAsync(request.ImageStream, request.ImageUrl);
         }
 
-        _mapper.Map(request, vinylRecordToUpdate, typeof(UpdateVinylRecordCommand), typeof(VinylRecord));
+        _mapper.Map(request, vinylRecordToUpdate, typeof(PartialUpdateVinylRecordCommand), typeof(VinylRecord));
 
         await _vinylRecordrepository.UpdateAsync(vinylRecordToUpdate);
     }

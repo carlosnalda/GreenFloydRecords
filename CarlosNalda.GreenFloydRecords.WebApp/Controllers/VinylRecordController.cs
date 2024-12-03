@@ -64,14 +64,13 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
                 return View(viewModel);
             }
 
-            if (file != null)
-            {
-                viewModel.VinylRecord.ImageUrl = await _imageFileManager.UpsertFileAsync(file.OpenReadStream(), viewModel.VinylRecord.ImageUrl);
-            }
-
             if (viewModel.VinylRecord.Id == default)
             {
                 var createVinylRecordCommand = _mapper.Map<CreateVinylRecordCommand>(viewModel.VinylRecord);
+                if (file != null)
+                {
+                    createVinylRecordCommand.ImageStream = file.OpenReadStream();
+                }
                 _ = await _mediator.Send(createVinylRecordCommand);
             }
             else
@@ -91,7 +90,7 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var vinylRecordList = await _mediator.Send(new GetVinylRecordListQuery() { includeProperties = "Genre,Artist" });
+            var vinylRecordList = await _mediator.Send(new GetVinylRecordListQuery() { IncludeProperties = "Genre,Artist" });
             return Json(new { data = vinylRecordList });
         }
 

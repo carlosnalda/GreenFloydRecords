@@ -19,8 +19,8 @@ namespace CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Querie
 
         public async Task<List<VinylRecordVm>> Handle(GetVinylRecordListQuery request, CancellationToken cancellationToken)
         {
-            var VinylRecords = (await _repository.ListAllAsync(request.includeProperties)).OrderBy(x => x.Name);
-            return _mapper.Map<List<VinylRecordVm>>(VinylRecords);
+            var vinylRecords = (await _repository.ListAllAsync(request.IncludeProperties)).OrderBy(x => x.Name);
+            return _mapper.Map<List<VinylRecordVm>>(vinylRecords);
         }
     }
 }

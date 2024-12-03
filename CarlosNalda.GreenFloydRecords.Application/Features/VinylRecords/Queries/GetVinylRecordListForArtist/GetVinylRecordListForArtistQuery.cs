@@ -3,8 +3,8 @@ using MediatR;
 
 namespace CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Queries.GetVinylRecordList
 {
-    public class GetVinylRecordListQuery : IRequest<List<VinylRecordVm>>
+    public class GetVinylRecordListForArtistQuery : IRequest<List<VinylRecordVm>>
     {
-        public string? IncludeProperties { get; set; }
+        public Guid ArtistId { get; set; }
     }
 }

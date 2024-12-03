@@ -1,5 +1,4 @@
-﻿using CarlosNalda.GreenFloydRecords.Domain.Entities;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace CarlosNalda.GreenFloydRecords.WebApp.ViewModels
@@ -29,13 +28,13 @@ namespace CarlosNalda.GreenFloydRecords.WebApp.ViewModels
         public Guid GenreId { get; set; }
 
         [ValidateNever]
-        public Genre Genre { get; set; }
+        public GenreViewModel Genre { get; set; }
 
         [Display(Name = "Artist")]
         public Guid ArtistId { get; set; }
 
         [ValidateNever]
-        public Artist Artist { get; set; }
+        public ArtistViewModel Artist { get; set; }
 
         [ValidateNever]
         [Display(Name = "Image")]

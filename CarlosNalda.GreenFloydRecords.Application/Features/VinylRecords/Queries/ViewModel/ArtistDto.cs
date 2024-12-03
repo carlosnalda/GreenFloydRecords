@@ -1,6 +1,6 @@
-﻿namespace CarlosNalda.GreenFloydRecords.Application.Features.Artists.Queries.ViewModel
+﻿namespace CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Queries.ViewModel
 {
-    public class ArtistVm
+    public class ArtistDto
     {
         public Guid Id { get; set; }
 
@@ -9,7 +9,5 @@
         public DateTime? Formed { get; set; }
 
         public DateTime? Disbanded { get; set; }
-
-        public IEnumerable<VinylRecordDto> VinylRecords { get; set; }
     }
 }

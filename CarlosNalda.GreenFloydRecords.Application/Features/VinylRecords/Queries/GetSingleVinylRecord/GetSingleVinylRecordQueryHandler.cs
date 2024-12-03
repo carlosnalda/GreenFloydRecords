@@ -21,13 +21,13 @@ public class GetSingleVinylRecordQueryHandler : IRequestHandler<GetSingleVinylRe
     public async Task<VinylRecordVm> Handle(GetSingleVinylRecordQuery request, CancellationToken cancellationToken)
     {
         var vinylRecord = await _repository.GetByIdAsync(request.Id);
-        var vinylRecordVm = _mapper.Map<VinylRecordVm>(vinylRecord);
 
         if (vinylRecord == null)
         {
             throw new NotFoundException(nameof(VinylRecord), request.Id);
         }
 
+        var vinylRecordVm = _mapper.Map<VinylRecordVm>(vinylRecord);
         return vinylRecordVm;
     }
 }

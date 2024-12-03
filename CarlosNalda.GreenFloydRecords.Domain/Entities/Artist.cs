@@ -12,5 +12,8 @@ namespace CarlosNalda.GreenFloydRecords.Domain.Entities
         public DateTime? Formed { get; set; }
 
         public DateTime? Disbanded { get; set; }
+
+        public ICollection<VinylRecord> VinylRecords { get; set; } =
+            new List<VinylRecord>();
     }
 }

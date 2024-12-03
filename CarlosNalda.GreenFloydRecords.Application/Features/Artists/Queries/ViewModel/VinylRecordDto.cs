@@ -1,6 +1,8 @@
-﻿namespace CarlosNalda.GreenFloydRecords.Application.Features.VinylRecords.Queries.ViewModel
+﻿using CarlosNalda.GreenFloydRecords.Domain.Entities;
+
+namespace CarlosNalda.GreenFloydRecords.Application.Features.Artists.Queries.ViewModel
 {
-    public class VinylRecordVm
+    public class VinylRecordDto
     {
         public Guid Id { get; set; }
 
@@ -16,11 +18,7 @@
 
         public Guid GenreId { get; set; }
 
-        public GenreDto Genre { get; set; }
-
-        public Guid ArtistId { get; set; }
-
-        public ArtistDto Artist { get; set; }
+        public Genre Genre { get; set; }
 
         public string ImageUrl { get; set; }
     }

@@ -14,7 +14,7 @@ namespace CarlosNalda.GreenFloydRecords.Domain.Entities
         public string Description { get; set; }
 
         [Required]
-        [Display(Name = "Release Date")]
+        // [Display(Name = "Release Date")]
         public DateTime? ReleaseDate { get; set; }
 
         [Required]
@@ -23,20 +23,20 @@ namespace CarlosNalda.GreenFloydRecords.Domain.Entities
         [Required]
         public decimal Price { get; set; }
 
-        [Display(Name = "Genre")]
+        // [Display(Name = "Genre")]
         public Guid GenreId { get; set; }
 
         // [ValidateNever]
         public Genre Genre { get; set; }
 
-        [Display(Name = "Artist")]
+        // [Display(Name = "Artist")]
         public Guid ArtistId { get; set; }
 
         // [ValidateNever]
         public Artist Artist { get; set; }
 
         // [ValidateNever]
-        [Display(Name = "Image")]
+        // [Display(Name = "Image")]
         public string ImageUrl { get; set; }
     }
 }

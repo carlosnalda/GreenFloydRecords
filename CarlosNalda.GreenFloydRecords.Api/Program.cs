@@ -2,6 +2,7 @@ using CarlosNalda.GreenFloydRecords.Persistence;
 using CarlosNalda.GreenFloydRecords.Infrastructure;
 using CarlosNalda.GreenFloydRecords.Application;
 using CarlosNalda.GreenFloydRecords.Api.Middleware;
+using Newtonsoft.Json.Serialization;
 
 namespace CarlosNalda.GreenFloydRecords.Api
 {
@@ -12,7 +13,12 @@ namespace CarlosNalda.GreenFloydRecords.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson(setupAction =>
+                {
+                    setupAction.SerializerSettings.ContractResolver =
+                        new CamelCasePropertyNamesContractResolver();
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

@@ -21,11 +21,9 @@ public class UpdateVinylRecordCommand : IRequest
 
     public Guid GenreId { get; set; }
 
-    public Genre Genre { get; set; }
-
     public Guid ArtistId { get; set; }
 
-    public Artist Artist { get; set; }
+    public string? ImageUrl { get; set; }
 
-    public string ImageUrl { get; set; }
+    public Stream? ImageStream { get; set; }
 }
