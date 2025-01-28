@@ -6,24 +6,26 @@ namespace CarlosNalda.GreenFloydRecords.Persistence.Repositories
     public class BaseRepository<T> : IAsyncRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _applicationDbContext;
+        protected readonly DbSet<T> _entities;
 
         public BaseRepository(ApplicationDbContext dbContext)
         {
             _applicationDbContext = dbContext;
+            _entities = _applicationDbContext.Set<T>();
         }
 
         public virtual async Task<T?> GetByIdAsync(Guid id)
         {
-            T? t = await _applicationDbContext.Set<T>().FindAsync(id);
+            T? t = await _entities.FindAsync(id);
             return t;
         }
 
         public async Task<T?> GetByIdAsNoTrackingAsync(Guid id)
         {
-            T? t = await _applicationDbContext.Set<T>().FindAsync(id);
+            T? t = await _entities.FindAsync(id);
             if (t != null)
             {
-                _applicationDbContext.Entry(t).State = EntityState.Detached;
+                _entities.Entry(t).State = EntityState.Detached;
             }
 
             return t;
@@ -31,7 +33,7 @@ namespace CarlosNalda.GreenFloydRecords.Persistence.Repositories
 
         public async Task<IReadOnlyList<T>> ListAllAsync(string? includeProperties = null)
         {
-            IQueryable<T> query = _applicationDbContext.Set<T>();
+            IQueryable<T> query = _entities;
             if (includeProperties != null)
             {
                 foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
@@ -44,8 +46,7 @@ namespace CarlosNalda.GreenFloydRecords.Persistence.Repositories
 
         public async virtual Task<IReadOnlyList<T>> GetPagedResponseAsync(int page, int size)
         {
-            return await _applicationDbContext
-                .Set<T>()
+            return await _entities
                 .Skip((page - 1) * size)
                 .Take(size)
                 .AsNoTracking()
@@ -54,9 +55,7 @@ namespace CarlosNalda.GreenFloydRecords.Persistence.Repositories
 
         public async Task<T> AddAsync(T entity)
         {
-            await _applicationDbContext
-                .Set<T>()
-                .AddAsync(entity);
+            await _entities.AddAsync(entity);
             await _applicationDbContext.SaveChangesAsync();
 
             return entity;
@@ -64,13 +63,13 @@ namespace CarlosNalda.GreenFloydRecords.Persistence.Repositories
 
         public async Task UpdateAsync(T entity)
         {
-            _applicationDbContext.Update(entity);
+            _entities.Entry(entity).State = EntityState.Modified;
             await _applicationDbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(T entity)
         {
-            _applicationDbContext.Set<T>().Remove(entity);
+            _entities.Remove(entity);
             await _applicationDbContext.SaveChangesAsync();
         }
     }
