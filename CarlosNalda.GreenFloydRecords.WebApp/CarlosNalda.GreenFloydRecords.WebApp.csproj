@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="DatabaseInitializer\**" />
     <Compile Remove="Data\**" />
@@ -28,26 +26,22 @@
     <None Remove="Infrastructure\**" />
     <None Remove="Migrations\**" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.8">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\images\vinylRecord\" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\CarlosNalda.GreenFloydRecords.Application\CarlosNalda.GreenFloydRecords.Application.csproj" />
     <ProjectReference Include="..\CarlosNalda.GreenFloydRecords.Domain\CarlosNalda.GreenFloydRecords.Domain.csproj" />
     <ProjectReference Include="..\CarlosNalda.GreenFloydRecords.Infrastructure\CarlosNalda.GreenFloydRecords.Infrastructure.csproj" />
     <ProjectReference Include="..\CarlosNalda.GreenFloydRecords.Persistence\CarlosNalda.GreenFloydRecords.Persistence.csproj" />
   </ItemGroup>
-
 </Project>
